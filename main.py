@@ -8,13 +8,17 @@ keep_alive()
 BOT_TOKEN = '7483677516:AAEfp2vhP9a6p9yvLCOPDMKqzGW-Il_dScE'
 CHAT_ID = '-1002063899284'  # Replace with your chat ID
 bot = telebot.TeleBot(BOT_TOKEN)
+previous_jobs = []
+
 def get_jobs():
+    global previous_jobs
     url = "https://nafezly.com/projects?page=1&specialize=development"
     text = requests.get(url).text
     soup = BeautifulSoup(text, 'html.parser')
     project_boxes = soup.find_all('div', class_='project-box')
 
     jobs = []
+
 
     for box in project_boxes:
         des_url=box.find('a', style="color: var(--bg-color-3);")['href']
@@ -32,7 +36,10 @@ def get_jobs():
             "location": box.find("span", class_="fal fa-map-marker-alt").parent.get_text(strip=True).replace("fal fa-map-marker-alt", "").strip(),
             "status": box.find("span", class_="fas fa-check-circle").parent.get_text(strip=True).replace("fas fa-check-circle", "").strip()
         }
-        jobs.append(job_data)
+        if job_data['title'] not in previous_jobs:
+            jobs.append(job_data)
+        previous_jobs.append(job_data['title'])
+
     jobs.reverse()
     return jobs
 
@@ -69,15 +76,15 @@ def split_message(text, max_length):
         chunks.append(current_chunk.strip())
     return chunks
 
-previous_jobs = []
+previous_jobs_all = []
 
 def check_for_new_jobs():
-    global previous_jobs
+    global previous_jobs_all
     current_jobs = get_jobs()
-    new_jobs = [job for job in current_jobs if job not in previous_jobs]
+    new_jobs = [job for job in current_jobs if job not in previous_jobs_all]
     for job in new_jobs:
         send_job_message(job)
-    previous_jobs = current_jobs
+    previous_jobs_all = current_jobs
 
 # Start polling for new jobs every 2 minutes
 while True:
@@ -86,4 +93,4 @@ while True:
     except Exception as e:
         print(f"Exception occurred: {str(e)}")
         continue
-    sleep(120)
+    sleep(60)
