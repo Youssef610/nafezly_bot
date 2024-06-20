@@ -2,7 +2,8 @@ from bs4 import BeautifulSoup
 import requests
 import telebot
 from time import sleep
-
+from keep_alive import keep_alive
+keep_alive()
 # Replace 'YOUR_BOT_TOKEN' with your actual bot token
 BOT_TOKEN = '7483677516:AAEfp2vhP9a6p9yvLCOPDMKqzGW-Il_dScE'
 CHAT_ID = '-1002063899284'  # Replace with your chat ID
