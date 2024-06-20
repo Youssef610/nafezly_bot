@@ -2,12 +2,12 @@ from bs4 import BeautifulSoup
 import requests
 import telebot
 from time import sleep
-from keep_alive import keep_alive
-keep_alive()
+
 # Replace 'YOUR_BOT_TOKEN' with your actual bot token
 BOT_TOKEN = '7483677516:AAEfp2vhP9a6p9yvLCOPDMKqzGW-Il_dScE'
 CHAT_ID = '-1002063899284'  # Replace with your chat ID
 bot = telebot.TeleBot(BOT_TOKEN)
+
 previous_jobs = []
 
 def get_jobs():
@@ -19,9 +19,8 @@ def get_jobs():
 
     jobs = []
 
-
     for box in project_boxes:
-        des_url=box.find('a', style="color: var(--bg-color-3);")['href']
+        des_url = box.find('a', style="color: var(--bg-color-3);")['href']
         html = requests.get(des_url).text
         soupp = BeautifulSoup(html, 'html.parser')
         description = soupp.find('h2', class_='col-12 p-0 naskh font-2 m-0').get_text()
@@ -43,6 +42,7 @@ def get_jobs():
     jobs.reverse()
     return jobs
 
+# Function to send a job message
 def send_job_message(job):
     message = f"*{job['title']}*\n\n" \
               f"*الوصف: * {job['description']}\n\n" \
@@ -60,6 +60,7 @@ def send_job_message(job):
     for chunk in split_message(message, max_message_length):
         bot.send_message(CHAT_ID, chunk, parse_mode='Markdown')
 
+# Function to split messages
 def split_message(text, max_length):
     """Split text into chunks of max_length for Telegram messages."""
     if len(text) <= max_length:
@@ -81,6 +82,7 @@ previous_jobs_all = []
 def check_for_new_jobs():
     global previous_jobs_all
     current_jobs = get_jobs()
+    print("Done")
     new_jobs = [job for job in current_jobs if job not in previous_jobs_all]
     for job in new_jobs:
         send_job_message(job)
@@ -88,9 +90,16 @@ def check_for_new_jobs():
 
 # Start polling for new jobs every 2 minutes
 while True:
+
     try:
+        print("before")
         check_for_new_jobs()
+        print("after")
+
     except Exception as e:
         print(f"Exception occurred: {str(e)}")
         continue
-    sleep(60)
+    sleep(60) 
+
+
+
