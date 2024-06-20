@@ -41,6 +41,7 @@ def get_jobs():
         previous_jobs.append(job_data['title'])
 
     jobs.reverse()
+    print(jobs)
     return jobs
 
 # Function to send a job message
