@@ -7,7 +7,8 @@ from time import sleep
 BOT_TOKEN = '7483677516:AAEfp2vhP9a6p9yvLCOPDMKqzGW-Il_dScE'
 CHAT_ID = '-1002063899284'  # Replace with your chat ID
 bot = telebot.TeleBot(BOT_TOKEN)
-
+from keep_alive import keep_alive
+keep_alive()
 previous_jobs = []
 
 def get_jobs():
@@ -41,65 +42,61 @@ def get_jobs():
 
     jobs.reverse()
     return jobs
-print(get_jobs())
-# # Function to send a job message
-# def send_job_message(job):
-#     message = f"*{job['title']}*\n\n" \
-#               f"*الوصف: * {job['description']}\n\n" \
-#               f"*الرابط: * [Job Link]({job['link']})\n\n" \
-#               f"*الميزانية: * {job['price_range']}\n\n" \
-#               f"*المدة المتاحة: * {job['time_duration']}\n\n" \
-#               f"*عدد المتقدمين: * {job['number_of_offers']}\n\n" \
-#               f"*تاريخ النشر: * {job['time_since_posted']}\n\n" \
-#               f"*بلد الناشر: * {job['location']}\n\n" \
-#               f"*الحالة:* *{job['status']}*"
 
-#     # Split the message into chunks of 4096 characters (Telegram's max message size for Markdown)
-#     # Each chunk will be sent as a separate message
-#     max_message_length = 4096
-#     for chunk in split_message(message, max_message_length):
-#         bot.send_message(CHAT_ID, chunk, parse_mode='Markdown')
+# Function to send a job message
+def send_job_message(job):
+    message = f"*{job['title']}*\n\n" \
+              f"*الوصف: * {job['description']}\n\n" \
+              f"*الرابط: * [Job Link]({job['link']})\n\n" \
+              f"*الميزانية: * {job['price_range']}\n\n" \
+              f"*المدة المتاحة: * {job['time_duration']}\n\n" \
+              f"*عدد المتقدمين: * {job['number_of_offers']}\n\n" \
+              f"*تاريخ النشر: * {job['time_since_posted']}\n\n" \
+              f"*بلد الناشر: * {job['location']}\n\n" \
+              f"*الحالة:* *{job['status']}*"
 
-# # Function to split messages
-# def split_message(text, max_length):
-#     """Split text into chunks of max_length for Telegram messages."""
-#     if len(text) <= max_length:
-#         return [text]
-#     chunks = []
-#     current_chunk = ""
-#     for line in text.splitlines():
-#         if len(current_chunk) + len(line) + 1 <= max_length:
-#             current_chunk += line + "\n"
-#         else:
-#             chunks.append(current_chunk.strip())
-#             current_chunk = line + "\n"
-#     if current_chunk:
-#         chunks.append(current_chunk.strip())
-#     return chunks
+    # Split the message into chunks of 4096 characters (Telegram's max message size for Markdown)
+    # Each chunk will be sent as a separate message
+    max_message_length = 4096
+    for chunk in split_message(message, max_message_length):
+        bot.send_message(CHAT_ID, chunk, parse_mode='Markdown')
 
-# previous_jobs_all = []
+# Function to split messages
+def split_message(text, max_length):
+    """Split text into chunks of max_length for Telegram messages."""
+    if len(text) <= max_length:
+        return [text]
+    chunks = []
+    current_chunk = ""
+    for line in text.splitlines():
+        if len(current_chunk) + len(line) + 1 <= max_length:
+            current_chunk += line + "\n"
+        else:
+            chunks.append(current_chunk.strip())
+            current_chunk = line + "\n"
+    if current_chunk:
+        chunks.append(current_chunk.strip())
+    return chunks
 
-# def check_for_new_jobs():
-#     global previous_jobs_all
-#     current_jobs = get_jobs()
-#     print("Done")
-#     new_jobs = [job for job in current_jobs if job not in previous_jobs_all]
-#     for job in new_jobs:
-#         send_job_message(job)
-#     previous_jobs_all = current_jobs
+previous_jobs_all = []
 
-# # Start polling for new jobs every 2 minutes
-# while True:
+def check_for_new_jobs():
+    global previous_jobs_all
+    current_jobs = get_jobs()
+    new_jobs = [job for job in current_jobs if job not in previous_jobs_all]
+    for job in new_jobs:
+        send_job_message(job)
+    previous_jobs_all = current_jobs
 
-#     try:
-#         print("before")
-#         check_for_new_jobs()
-#         print("after")
+# Start polling for new jobs every 2 minutes
+while True:
 
-#     except Exception as e:
-#         print(f"Exception occurred: {str(e)}")
-#         continue
-#     sleep(60) 
+    try:
+        print("before")
+        check_for_new_jobs()
+        print("after")
 
-
-
+    except Exception as e:
+        print(f"Exception occurred: {str(e)}")
+        continue
+    sleep(60) 
