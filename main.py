@@ -7,8 +7,6 @@ from time import sleep
 BOT_TOKEN = '7483677516:AAEfp2vhP9a6p9yvLCOPDMKqzGW-Il_dScE'
 CHAT_ID = '-1002063899284'  # Replace with your chat ID
 bot = telebot.TeleBot(BOT_TOKEN)
-from keep_alive import keep_alive
-keep_alive()
 previous_jobs = []
 
 def get_jobs():
